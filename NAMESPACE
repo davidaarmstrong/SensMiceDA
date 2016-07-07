@@ -1,0 +1,13 @@
+importFrom("stats", "binomial", "coef", "formula", "glm.fit", "var", "model.matrix", 
+         "predict", "rnorm", "runif", "summary.glm", "deviance", "df.residual", "pchisq", "update")
+importFrom("utils", "data")
+importFrom("lattice", "xyplot", "panel.segments", "panel.xyplot", "panel.abline")
+importFrom("nnet", "multinom")
+import(mice)
+import(mitools)
+S3method(plot, sens.pool)
+export(sens.mice)
+export(mice.impute.MyFunc)
+export(sens.pool)
+export(sens.test)
+export(sens.est)

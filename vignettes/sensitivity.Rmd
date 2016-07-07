@@ -1,0 +1,66 @@
+---
+title: "Testing Sensitivity to Non-ignorability Assumptions in Multiply Imputed Data"
+author: "Dave Armstrong"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+The SensMiceDA package is an extension of the original SensMice package written by Noemie Reseguier and others.  I have added some convenience features for pooling, plotting and testing the results of the sensitivity analysis.  Below I demonstrate some of the main features
+
+## Setting up the Data
+
+To undertake a sensitivity analysis, first you have to generate multiply imputed data with `mice` or some other function that produces multiple completed datasets.  If the latter, `datalist2mids` in the `mitools` package will convert the multiple completed datasets to `mids` format.  First, let's consider the model before we use any imputation (with listwise deletion only).  
+
+```{r, echo=T}
+library(SensMiceDA)
+data(nes2004)
+nes.mod <- lm(leftright ~ age + educ + male + hhincome2, data=nes2004)
+summary(nes.mod)
+```
+
+Now, we can do the imputation with `mice`.
+
+```{r, echo=T}
+library(mice)
+nes.mice <- mice(nes2004, printFlag=F)
+```
+
+## Generating new imputations
+
+We can generate new imputations based on a hypothetical non-ignorable (NI) mechanism.  To do this, we have to specify how different the responders are from the non-responders.  With numeric variables, this takes the form of the difference in means between responders and non-responders.  With binary variables, this takes the form of the odds ratio for the ones category.  With categorical variables (with more than two levels), this takes the form of a matrix where each column represents the odds ratio for the difference in probability between responders and non-responders for that category relative to the base.  We start with a simple example where we consider that non-responders might be either more left or more right by a standard deviation than responders. 
+
+```{r, echo=T}
+newvals <- sd(nes2004$leftright, na.rm=T)*c(-1,1)
+```
+
+Now, we can feed these values into the NI imputation mechanism. 
+
+```{r, echo=T}
+newimps <- sens.est(nes.mice, list(leftright = newvals))
+```
+
+## Summarizing the Results
+The new imputations might be of interest in their own right, but more interesting is the effect this NI imputation scheme has on the statistical models.  You can get this information by using the `sens.pool` function.  The function takes as its first argument the model you want to estimate that was estimated on the listwise deleted data.  The function updates the model using the completed datasets from the NI simulation and then aggregates across the models in the usual way.  
+
+```{r, echo=T}
+pool.est <- sens.pool(nes.mod, impData=nes.mice, sensData=newimps)
+```
+
+## Plotting the Results
+
+Just looking at the results is interesting, but there is also a plot method for these objects: 
+
+```{r, echo=T, fig.height=5, fig.width=7}
+plot(pool.est, layout=c(4,2))
+```
+
+## Testing variable exclusions
+
+Finally, you can test for the exclusion of a particular variable with the `sens.test` function: 
+
+```{r, echo=T}
+sens.test(nes.mod, var="educ", impData=nes.mice, sensData = newimps)
+```

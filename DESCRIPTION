@@ -1,0 +1,17 @@
+Package: SensMiceDA
+Type: Package
+Title: Multivariate Imputation by Chained Equations (Iteration Step for Sensitivity Analysis)
+Version: 1.1
+Date: 2016-07-06
+Author: Noemie Reseguier and Dave Armstrong
+Maintainer: Dave Armstrong <dave@quantoid.net>
+Description: Sensitivity analysis for models to the missing at random assumption. 
+Imports: mice, mitools, lattice, nnet
+License: GPL
+Encoding: latin1
+Collate: 'SensMice.r'
+Packaged: 2016-07-04 21:38:06 UTC; armstrod
+NeedsCompilation: no
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

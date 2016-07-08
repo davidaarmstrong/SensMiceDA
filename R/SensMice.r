@@ -604,3 +604,53 @@ augment <- function (y, ry, x, maxcat = 50, ...) {
     wa <- c(rep(1, length(y)), rep((p + 1)/nr, nr))
     return(list(y = ya, ry = rya, x = xa, w = wa))
 }
+
+
+
+sens.wald <- function(obj, hyps, sensData, impData, digits=3, ...){
+    nconds <- length(sensData)
+    condlist <- list()
+    j <- 1
+    for(l in 1:nconds){
+        condlist[[j]] <- list()
+        for(i in 1:sensData[[j]]$m){
+            condlist[[j]][[i]] <- complete(sensData[[j]], i)
+        }
+        j <- j+1
+    }
+    condlist[[j]] <- list()
+    for(i in 1:impData$m){
+        condlist[[(j)]][[i]] <- complete(impData, i)
+    }
+    if(length(names(sensData)) > 0){
+        names(condlist) <- c(names(sensData), "mice")
+    }                                                
+    else{
+        names(condlist) <- c(as.character(1:nconds), "mice")
+    }
+    cond.mods <- list()
+    for(i in 1:length(condlist)){
+        cond.mods[[i]] <- list()
+        for(j in 1:length(condlist[[i]])){
+            tmp <- obj
+            attr(tmp$terms, ".Environment") <- environment()
+            cond.mods[[i]][[j]] <- update(tmp, . ~ ., data=condlist[[i]][[j]])
+        }
+    }
+    comb.mods <- lapply(cond.mods, MIcombine)
+    res <- list()
+    for(i in 1:length(comb.mods)){
+       res[[i]] <- linearHypothesis.default(comb.mods[[1]], hyps, coef.=coef(comb.mods[[i]], vcov. = vcov(comb.mods[[i]])))
+
+    }
+    out <- sapply(res, function(x)x[2,])
+    fmt <- paste0("%.", digits, "f")
+    out2 <- t(array(sprintf(fmt, out), dim=dim(out)))
+    colnames(out2) <- rownames(out)  
+    rownames(out2) <- names(condlist)
+    noquote(out2)
+}
+    
+    
+
+

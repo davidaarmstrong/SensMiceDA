@@ -3,6 +3,7 @@ importFrom("stats", "binomial", "coef", "formula", "glm.fit", "var", "model.matr
 importFrom("utils", "data")
 importFrom("lattice", "xyplot", "panel.segments", "panel.xyplot", "panel.abline")
 importFrom("nnet", "multinom")
+importFrom("car", "linearHypothesis.default")
 import(mice)
 import(mitools)
 S3method(plot, sens.pool)

@@ -64,3 +64,14 @@ Finally, you can test for the exclusion of a particular variable with the `sens.
 ```{r, echo=T}
 sens.test(nes.mod, var="educ", impData=nes.mice, sensData = newimps)
 ```
+
+We could also do a Wald test on the coefficients using the vector of pooled model coefficients and the pooled-model total covariance matrix: 
+
+```{r, echo=T}
+sens.wald(nes.mod, c("educ2=0", "educ3=0", "educ4=0", "educ5=0"), 
+    impData=nes.mice, sensData = newimps)
+```
+
+Note that some researchers (Li, Meng, Ragunathan and Rubin, 1991; Reiter, 2007) have proposed corrections to the degrees of freedom representing the number of linear restrictions (i.e., the numerator degrees of freedom in the F-statistic). These are not currently implemented.  
+
+

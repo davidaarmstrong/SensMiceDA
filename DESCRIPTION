@@ -6,7 +6,7 @@ Date: 2016-07-06
 Author: Noemie Reseguier and Dave Armstrong
 Maintainer: Dave Armstrong <dave@quantoid.net>
 Description: Sensitivity analysis for models to the missing at random assumption. 
-Depends: mice (==2.46.0)
+Depends: mice (=2.46.0)
 Imports: mitools, lattice, nnet
 License: GPL
 Encoding: latin1
